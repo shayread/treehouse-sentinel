@@ -6,11 +6,10 @@ Database manager for the bird_identifications table. Contains database lifecycle
 
 class BirdIdentificationsManager:
 
-    TABLE_STORAGE_PATH = "database/table/storage/bird_identifications.db"
     INSERT_QUERY_FORMAT = "INSERT INTO bird_identifications (bird_species, location, weather, temperature_fahrenheit) VALUES (?, ?, ?, ?)"
 
     def __init__(self):
-        self.db_connection = sqlite3.connect(self.TABLE_STORAGE_PATH)
+        self.db_connection = sqlite3.connect(TABLE_STORAGE_PATH)
         self.db_cursor = self.db_connection.cursor()
 
     def create_identification(self, bird_species, location, weather, temperature_farenheit):

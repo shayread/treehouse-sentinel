@@ -1,8 +1,27 @@
+import argparse
+from pathlib import Path
+from util import constants
+
 '''
 Entry point for the treehouse sentinel. Launches the continuous, data-gathering script
 '''
 
+def parse_args():
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument(
+        "-t",
+        "--timeout-hours",
+        type=int, 
+        help="Optional parameter for the number of hours before the sentinel powers down", 
+        required=False
+    )
+    return arg_parser.parse_args()
+
 def main():
+    # Initialize args, dependencies, and .db file
+    args = parse_args()
+    Path(constants.TABLE_STORAGE_PATH).touch()
+
     return
 
 if __name__ == "__main__":
