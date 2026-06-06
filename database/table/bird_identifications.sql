@@ -7,6 +7,9 @@ CREATE TABLE bird_identifications (
     location TEXT NOT NULL,
     weather TEXT NOT NULL,
     temperature_fahrenheit INTEGER NOT NULL,
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(bird_species, timestamp)
+    year INTEGER NOT NULL,
+    month INTEGER NOT NULL,
+    day INTEGER NOT NULL,
+    hour INTEGER NOT NULL,
+    PRIMARY KEY(bird_species, year, month, day, hour)
 )
