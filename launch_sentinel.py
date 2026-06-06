@@ -1,9 +1,10 @@
 import argparse
 from pathlib import Path
 from util import constants
+from audio_processor.audio_processor import AudioProcessor
 
 '''
-Entry point for the treehouse sentinel. Launches the continuous, data-gathering script
+Entry point for the treehouse sentinel. Launches the data-gathering script
 '''
 
 def parse_args():
@@ -22,7 +23,13 @@ def main():
     args = parse_args()
     Path(constants.TABLE_STORAGE_PATH).touch()
 
-    return
+    # Begin audio processing loop
+    try:
+        audio_processor = AudioProcessor()
+        audio_processor.gather_data(args.timeout_hours) if args.timeout_hours else audio_processor.gather_data()
+        print("Shutting down the sentinel...")
+    except KeyboardInterrupt:
+        print("Shutting down the sentinel at the user's request...")
 
 if __name__ == "__main__":
     main()
