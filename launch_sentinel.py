@@ -10,7 +10,7 @@ Entry point for the treehouse sentinel. Launches the data-gathering script
 DEFAULT_CLIP_LENGTH_SECONDS = 60
 DEFAULT_SAMPLE_RATE = 48000
 DEFAULT_CHANNELS = 2
-CONFIDENCE_VALUE_THRESHOLD = 0.9
+DEFAULT_CONFIDENCE_VALUE_THRESHOLD = 0.9
 
 def parse_args():
     arg_parser = argparse.ArgumentParser()
@@ -59,7 +59,7 @@ def main():
     clip_interval = args.clip_interval if args.clip_interval else DEFAULT_CLIP_LENGTH_SECONDS
     sample_rate = args.sample_rate if args.sample_rate else DEFAULT_SAMPLE_RATE
     channels = args.channels if args.channels else DEFAULT_CHANNELS
-    confidence_value_threshold = args.confidence_value_threshold if args.confidence_value_threshold else CONFIDENCE_VALUE_THRESHOLD
+    confidence_value_threshold = args.confidence_value_threshold if args.confidence_value_threshold else DEFAULT_CONFIDENCE_VALUE_THRESHOLD
     Path(constants.TABLE_STORAGE_PATH).touch()
 
     # Begin audio processing loop
