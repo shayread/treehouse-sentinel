@@ -7,13 +7,48 @@ from audio_processor.audio_processor import AudioProcessor
 Entry point for the treehouse sentinel. Launches the data-gathering script
 '''
 
+DEFAULT_CLIP_LENGTH_SECONDS = 60
+DEFAULT_SAMPLE_RATE = 48000
+DEFAULT_CHANNELS = 2
+CONFIDENCE_VALUE_THRESHOLD = 0.9
+
 def parse_args():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument(
-        "-t",
+        "-th",
         "--timeout-hours",
         type=int, 
-        help="Optional parameter for the number of hours before the sentinel powers down", 
+        help=("Optional parameter for the number of hours before the sentinel stops collecting data "
+             "(default is 24)"), 
+        required=False
+    )
+    arg_parser.add_argument(
+        "-ci",
+        "--clip-interval",
+        type=int, 
+        help="Optional parameter for the duration of each evaluated audio clip in seconds (default is 60)", 
+        required=False
+    )
+    arg_parser.add_argument(
+        "-sr",
+        "--sample-rate",
+        type=int, 
+        help="Optional parameter for the sample rate of your recording device in kHz (default is 48000)", 
+        required=False
+    )
+    arg_parser.add_argument(
+        "-c",
+        "--channels",
+        type=int, 
+        help="Optional parameter for the number of channels you wish to record with (default is 2 for stereo audio)", 
+        required=False
+    )
+    arg_parser.add_argument(
+        "-cvt",
+        "--confidence-value-threshold",
+        type=int, 
+        help=("Optional parameter for the confidence value threshold the model must breach before saving an "
+             "identification. Ranges from 0 to 1.0 (0 - 100%% confidence, default is 0.9)"), 
         required=False
     )
     return arg_parser.parse_args()
@@ -21,15 +56,19 @@ def parse_args():
 def main():
     # Initialize args, dependencies, and .db file
     args = parse_args()
+    clip_interval = args.clip_interval if args.clip_interval else DEFAULT_CLIP_LENGTH_SECONDS
+    sample_rate = args.sample_rate if args.sample_rate else DEFAULT_SAMPLE_RATE
+    channels = args.channels if args.channels else DEFAULT_CHANNELS
+    confidence_value_threshold = args.confidence_value_threshold if args.confidence_value_threshold else CONFIDENCE_VALUE_THRESHOLD
     Path(constants.TABLE_STORAGE_PATH).touch()
 
     # Begin audio processing loop
     try:
-        audio_processor = AudioProcessor()
+        audio_processor = AudioProcessor(clip_interval, sample_rate, channels, confidence_value_threshold)
         audio_processor.gather_data(args.timeout_hours) if args.timeout_hours else audio_processor.gather_data()
-        print("Shutting down the sentinel...")
+        print("\nShutting down the sentinel...")
     except KeyboardInterrupt:
-        print("Shutting down the sentinel at the user's request...")
+        print("\nShutting down the sentinel at the user's request...")
 
 if __name__ == "__main__":
     main()

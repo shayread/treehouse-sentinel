@@ -4,10 +4,11 @@ from database.manager.bird_identifications_manager import BirdIdentificationsMan
 
 class AudioProcessor:
 
-    CONFIDENCE_VALUE_THRESHOLD = 0.9
-    DEFAULT_CLIP_LENGTH_SECONDS = 60
-    DEFAULT_SAMPLE_RATE = 48000
-    DEFAULT_CHANNELS = 2 # Stereo audio
+    def __init__(self, clip_interval, sample_rate, channels, confidence_value_threshold):
+        self.clip_interval = clip_interval
+        self.sample_rate = sample_rate
+        self.channels = channels
+        self.confidence_value_threshold = confidence_value_threshold
 
     def initialize_connected_devices(self):
         devices = sd.query_devices()
@@ -23,9 +24,9 @@ class AudioProcessor:
 
     def record_clip(self):
         recording = sd.rec(
-            frames=int(self.DEFAULT_CLIP_LENGTH_SECONDS * self.DEFAULT_SAMPLE_RATE), 
-            samplerate=self.DEFAULT_SAMPLE_RATE,
-            channels=self.DEFAULT_CHANNELS
+            frames=int(self.clip_interval * self.sample_rate), 
+            samplerate=self.sample_rate,
+            channels=self.channels
         )
         sd.wait()
         return recording
@@ -43,7 +44,7 @@ class AudioProcessor:
             recording = self.record_clip()
             species, confidence = self.process_clip(recording)
 
-            if confidence >= self.CONFIDENCE_VALUE_THRESHOLD:
+            if confidence >= self.confidence_value_threshold:
                 # TODO: Fetch weather & temp via API
                 bird_identifications_manager.create_identification(species, 'test', 'test', 98)
 
