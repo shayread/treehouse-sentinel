@@ -1,28 +1,40 @@
 import time
-import sounddevice
+import sounddevice as sd
 from database.manager.bird_identifications_manager import BirdIdentificationsManager
 
 class AudioProcessor:
 
     CONFIDENCE_VALUE_THRESHOLD = 0.9
+    DEFAULT_CLIP_LENGTH_SECONDS = 60
+    DEFAULT_SAMPLE_RATE = 48000
+    DEFAULT_CHANNELS = 2 # Stereo audio
 
-    def verify_connected_devices(self):
-        devices = sounddevice.query_devices()
-        devices
+    def initialize_connected_devices(self):
+        devices = sd.query_devices()
         if not devices:
             raise RuntimeError("No connected audio devices detected. Please connect a microphone to launch the sentinel")
         else:
-            print(f"Detected {len(devices)} connected audio devices: \n{devices}")
+            print(f"Detected {len(devices)} connected audio devices:\n")
+            for index, device in enumerate(devices): 
+                print(f"{index + 1}: {device['name']}")
+            device_number = int(input("\nPlease enter the number of the device you would like to use for audio recording, then press enter to continue:\n"))
+            sd.default.device = device_number - 1
         return
 
     def record_clip(self):
-        return
+        recording = sd.rec(
+            frames=int(self.DEFAULT_CLIP_LENGTH_SECONDS * self.DEFAULT_SAMPLE_RATE), 
+            samplerate=self.DEFAULT_SAMPLE_RATE,
+            channels=self.DEFAULT_CHANNELS
+        )
+        sd.wait()
+        return recording
 
     def process_clip(self, recording):
         return
 
     def gather_data(self, timeout_hours=24):
-        self.verify_connected_devices()
+        self.initialize_connected_devices()
         bird_identifications_manager = BirdIdentificationsManager()
         initial_time = time.monotonic()
         elapsed_time = 0
