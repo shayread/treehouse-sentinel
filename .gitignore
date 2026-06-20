@@ -2,3 +2,4 @@
 *pycache*
 *.db
 .venv
+*.wav

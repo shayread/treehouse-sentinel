@@ -1,7 +1,9 @@
-import argparse
+from audio_processor.audio_processor import AudioProcessor
+from database.manager.bird_identifications_manager import BirdIdentificationsManager
 from pathlib import Path
 from util import constants
 from audio_processor.audio_processor import AudioProcessor
+import argparse
 
 '''
 Entry point for the treehouse sentinel. Launches the data-gathering script
@@ -46,7 +48,7 @@ def parse_args():
     arg_parser.add_argument(
         "-cvt",
         "--confidence-value-threshold",
-        type=int, 
+        type=float, 
         help=("Optional parameter for the confidence value threshold the model must breach before saving an "
              "identification. Ranges from 0 to 1.0 (0 - 100%% confidence, default is 0.9)"), 
         required=False
@@ -54,13 +56,18 @@ def parse_args():
     return arg_parser.parse_args()
 
 def main():
-    # Initialize args, dependencies, and .db file
+    # Initialize args
     args = parse_args()
     clip_interval = args.clip_interval if args.clip_interval else DEFAULT_CLIP_LENGTH_SECONDS
     sample_rate = args.sample_rate if args.sample_rate else DEFAULT_SAMPLE_RATE
     channels = args.channels if args.channels else DEFAULT_CHANNELS
     confidence_value_threshold = args.confidence_value_threshold if args.confidence_value_threshold else DEFAULT_CONFIDENCE_VALUE_THRESHOLD
+
+    # Initialize files
+    Path(constants.TABLE_STORAGE_PATH).parent.mkdir(parents=True, exist_ok=True)
     Path(constants.TABLE_STORAGE_PATH).touch()
+    Path(constants.LATEST_AUDIO_CLIP_PATH).parent.mkdir(parents=True, exist_ok=True)
+    Path(constants.LATEST_AUDIO_CLIP_PATH).touch()
 
     # Begin audio processing loop
     try:
