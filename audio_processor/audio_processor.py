@@ -2,6 +2,7 @@ from birdnetlib import Recording
 from birdnetlib.analyzer import Analyzer
 from database.manager.bird_identifications_manager import BirdIdentificationsManager
 from datetime import datetime
+from facades.ip_geolocation_facade import IPGeolocationFacade
 from scipy.io.wavfile import write
 from util import constants
 from zoneinfo import ZoneInfo
@@ -11,6 +12,7 @@ import time
 class AudioProcessor:
 
     ANALYZER = Analyzer()
+    IP_GEOLOCATION_FACADE = IPGeolocationFacade()
 
     def __init__(self, clip_interval, sample_rate, channels, confidence_value_threshold):
         self.clip_interval = clip_interval
@@ -43,12 +45,23 @@ class AudioProcessor:
 
     def detect_species_in_clip(self):
         print("Analyzing audio clip for bird species...")
-        # TODO: Retrieve latitude and longitude for location data
-        recording = Recording(
-            analyzer=self.ANALYZER,
-            path=constants.LATEST_AUDIO_CLIP_PATH,
-            min_conf=self.confidence_value_threshold
-        )
+        latitude, longitude = self.IP_GEOLOCATION_FACADE.get_coordinates()
+
+        if latitude and longitude:
+            recording = Recording(
+                analyzer=self.ANALYZER,
+                path=constants.LATEST_AUDIO_CLIP_PATH,
+                min_conf=self.confidence_value_threshold,
+                lat=latitude,
+                lon=longitude
+            )
+        else:
+            recording = Recording(
+                analyzer=self.ANALYZER,
+                path=constants.LATEST_AUDIO_CLIP_PATH,
+                min_conf=self.confidence_value_threshold
+            )
+
         recording.analyze()
         return recording.detections
 
@@ -61,6 +74,7 @@ class AudioProcessor:
         while elapsed_time < timeout_hours * 60 * 60:
             self.record_clip()
             detections = self.detect_species_in_clip()
+
             for detection in detections:
                 species = detection['common_name']
                 pacific_time = datetime.now(ZoneInfo("America/Los_Angeles"))
@@ -68,7 +82,8 @@ class AudioProcessor:
 
                 # TODO: Fetch weather & temp via API
                 if not bird_identifications_manager.has_duplicate_identification(species, pacific_time.year, pacific_time.month, pacific_time.day, pacific_time.hour):
-                    bird_identifications_manager.create_identification(species, 'test', 'test', 98, pacific_time.year, pacific_time.month, pacific_time.day, pacific_time.hour)
+                    location_info = self.IP_GEOLOCATION_FACADE.get_location_info()
+                    bird_identifications_manager.create_identification(species, location_info['country'], location_info['region'], location_info['city'], 'test', 98, pacific_time.year, pacific_time.month, pacific_time.day, pacific_time.hour)
 
             elapsed_time = time.monotonic() - initial_time
         
