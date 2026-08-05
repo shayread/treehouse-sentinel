@@ -1,6 +1,4 @@
-/*
- * Schema for the bird_identifications table. Stores unique identifications based on species + timestamp combos
- */
+/* Schema for the bird_identifications table. Stores unique identifications based on species + timestamp combos */
 
 CREATE TABLE IF NOT EXISTS bird_identifications (
     bird_species TEXT NOT NULL,
