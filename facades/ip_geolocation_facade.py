@@ -11,7 +11,7 @@ class IPGeolocationFacade:
             response_json = response.json()
             return response_json['lat'], response_json['lon']
         else:
-            # Fail softly via log, analyzer can function without coordinates
+            # Return null values since analyzer can function without coordinates
             print(f"WARNING: IP Geolocation request failed with status code {response.status_code} and "
                   f"reason {response.reason}. Proceeding to data collection without coordinates...")
             return None, None

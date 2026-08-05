@@ -73,7 +73,7 @@ def main():
     try:
         audio_processor = AudioProcessor(clip_interval, sample_rate, channels, confidence_value_threshold)
         audio_processor.gather_data(args.timeout_hours) if args.timeout_hours else audio_processor.gather_data()
-        print("\nShutting down the sentinel...")
+        print("\nData collection timeout reached. Shutting down the sentinel...")
     except KeyboardInterrupt:
         print("\nShutting down the sentinel at the user's request...")
 
