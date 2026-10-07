@@ -11,7 +11,7 @@ Entry point for the treehouse sentinel. Launches the data-gathering script
 
 DEFAULT_CLIP_LENGTH_SECONDS = 60
 DEFAULT_SAMPLE_RATE = 48000
-DEFAULT_CHANNELS = 2
+DEFAULT_CHANNELS = 1
 DEFAULT_CONFIDENCE_VALUE_THRESHOLD = 0.9
 
 def parse_args():

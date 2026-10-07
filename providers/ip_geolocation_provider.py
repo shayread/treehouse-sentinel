@@ -1,7 +1,7 @@
 import requests
 
 # Documentation: https://ip-api.com/docs/api:json
-class IPGeolocationFacade:
+class IPGeolocationProvider:
 
     ENDPOINT = "http://ip-api.com/json"
 
