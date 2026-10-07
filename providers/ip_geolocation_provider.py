@@ -1,6 +1,10 @@
 import requests
 
-# Documentation: https://ip-api.com/docs/api:json
+'''
+Provider for retrieving geolocation information based on the public IP address of the device running the application.
+API Documentation: https://ip-api.com/docs/api:json
+'''
+
 class IPGeolocationProvider:
 
     ENDPOINT = "http://ip-api.com/json"

@@ -6,7 +6,7 @@ from audio_processor.audio_processor import AudioProcessor
 import argparse
 
 '''
-Entry point for the treehouse sentinel. Launches the data-gathering script
+Entry point for the treehouse sentinel. Launches the data-gathering script.
 '''
 
 DEFAULT_CLIP_LENGTH_SECONDS = 60

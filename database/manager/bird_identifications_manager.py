@@ -2,7 +2,7 @@ from util import constants
 import sqlite3
 
 '''
-Database manager for the bird_identifications table. Contains database lifecycle and CRUD operations
+Database manager for the bird_identifications table.
 '''
 
 class BirdIdentificationsManager:

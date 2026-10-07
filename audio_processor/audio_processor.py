@@ -9,6 +9,10 @@ from zoneinfo import ZoneInfo
 import sounddevice as sd
 import time
 
+'''
+Audio processor for handling audio recording and bird species detection.
+'''
+
 class AudioProcessor:
 
     ANALYZER = Analyzer()
