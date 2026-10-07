@@ -8,6 +8,7 @@ from util import constants
 from zoneinfo import ZoneInfo
 import sounddevice as sd
 import time
+import tzlocal
 
 '''
 Audio processor for handling audio recording and bird species detection.
@@ -81,13 +82,13 @@ class AudioProcessor:
 
             for detection in detections:
                 species = detection['common_name']
-                pacific_time = datetime.now(ZoneInfo("America/Los_Angeles"))
+                current_time = datetime.now(ZoneInfo(tzlocal.get_localzone_name()))
                 print(f"Detected {species} with {detection['confidence']} confidence")
 
                 # TODO: Fetch weather & temp via API
-                if not bird_identifications_manager.has_duplicate_identification(species, pacific_time.year, pacific_time.month, pacific_time.day, pacific_time.hour):
+                if not bird_identifications_manager.has_duplicate_identification(species, current_time.year, current_time.month, current_time.day, current_time.hour):
                     location_info = self.IP_GEOLOCATION_PROVIDER.get_location_info()
-                    bird_identifications_manager.create_identification(species, location_info['country'], location_info['region'], location_info['city'], 'test', 98, pacific_time.year, pacific_time.month, pacific_time.day, pacific_time.hour)
+                    bird_identifications_manager.create_identification(species, location_info['country'], location_info['region'], location_info['city'], 'test', 98, current_time.year, current_time.month, current_time.day, current_time.hour)
 
             elapsed_time = time.monotonic() - initial_time
         
