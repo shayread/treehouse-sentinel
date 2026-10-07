@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS bird_identifications (
     region TEXT NOT NULL,
     city TEXT NOT NULL,
     weather TEXT NOT NULL,
-    temperature_fahrenheit INTEGER NOT NULL,
+    temperature_fahrenheit DECIMAL(5, 2) NOT NULL,
     year INTEGER NOT NULL,
     month INTEGER NOT NULL,
     day INTEGER NOT NULL,

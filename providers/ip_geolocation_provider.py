@@ -11,6 +11,7 @@ class IPGeolocationProvider:
 
     def get_coordinates(self):
         response = requests.get(url=self.ENDPOINT)
+
         if response.ok:
             response_json = response.json()
             return response_json['lat'], response_json['lon']
@@ -22,6 +23,7 @@ class IPGeolocationProvider:
         
     def get_location_info(self):
         response = requests.get(url=self.ENDPOINT)
+        
         if response.ok:
             response_json = response.json()
             return {

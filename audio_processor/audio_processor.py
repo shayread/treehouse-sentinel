@@ -3,6 +3,7 @@ from birdnetlib.analyzer import Analyzer
 from database.manager.bird_identifications_manager import BirdIdentificationsManager
 from datetime import datetime
 from providers.ip_geolocation_provider import IPGeolocationProvider
+from providers.weather_provider import WeatherProvider
 from scipy.io.wavfile import write
 from util import constants
 from zoneinfo import ZoneInfo
@@ -18,6 +19,7 @@ class AudioProcessor:
 
     ANALYZER = Analyzer()
     IP_GEOLOCATION_PROVIDER = IPGeolocationProvider()
+    WEATHER_PROVIDER = WeatherProvider()
 
     def __init__(self, clip_interval, sample_rate, channels, confidence_value_threshold):
         self.clip_interval = clip_interval
@@ -85,10 +87,32 @@ class AudioProcessor:
                 current_time = datetime.now(ZoneInfo(tzlocal.get_localzone_name()))
                 print(f"Detected {species} with {detection['confidence']} confidence")
 
-                # TODO: Fetch weather & temp via API
                 if not bird_identifications_manager.has_duplicate_identification(species, current_time.year, current_time.month, current_time.day, current_time.hour):
                     location_info = self.IP_GEOLOCATION_PROVIDER.get_location_info()
-                    bird_identifications_manager.create_identification(species, location_info['country'], location_info['region'], location_info['city'], 'test', 98, current_time.year, current_time.month, current_time.day, current_time.hour)
+                    latitude, longitude = self.IP_GEOLOCATION_PROVIDER.get_coordinates()
+
+                    if latitude and longitude:
+                        weather_info = self.WEATHER_PROVIDER.get_weather_info(latitude, longitude)
+                    else:
+                        weather_info = {
+                            "temperature": -50.0,
+                            "weather": "UNKNOWN"
+                        }
+
+                    print(weather_info)
+                    
+                    bird_identifications_manager.create_identification(
+                        species, 
+                        location_info['country'], 
+                        location_info['region'], 
+                        location_info['city'], 
+                        weather_info['weather'], 
+                        weather_info['temperature'],
+                        current_time.year, 
+                        current_time.month, 
+                        current_time.day, 
+                        current_time.hour
+                    )
 
             elapsed_time = time.monotonic() - initial_time
         
